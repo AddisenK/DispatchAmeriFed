@@ -53,7 +53,6 @@ const routes = {
         { id: '9613', origin: 'MKJP', destination: 'KMIA', duration: '2:00', type: 'International Passenger', airline: 'American Airlines' },
         { id: '1066', origin: 'MMMX', destination: 'KIAH', duration: '1:45', type: 'International Passenger', airline: 'American Airlines' },
         { id: '6106', origin: 'KDFW', destination: 'MMMX', duration: '3:00', type: 'International Passenger', airline: 'American Airlines' },
-        { id: '6106', origin: 'KDFW', destination: 'MMMX', duration: '3:00', type: 'International Passenger', airline: 'American Airlines' },
         { id: '2852', origin: 'KORD', destination: 'TJSJ', duration: '4:20', type: 'International Passenger', airline: 'American Airlines' },
         { id: '643', origin: 'KDFW', destination: 'NZAA', duration: '15:00', type: 'International Passenger', airline: 'American Airlines' },
         { id: '8994', origin: 'KORD', destination: 'EGLL', duration: '8:30', type: 'International Passenger', airline: 'American Airlines' },
@@ -73,8 +72,8 @@ const routes = {
     ]
 };
 
-// Discord webhook URL - will be replaced by Vercel during build
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1410824671301206108/1tjGN1ZCnsczKz_-CA7t7RwfPT74Dn4idYsVH2nl6m37CPKcSrJTC2T5xqM34bOizyci";
+// Discord webhook URL
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1410824671301206108/1tjGN1ZCnsczKz_-CA7t7RwfPT74Dn4idYsVH2nl6m37CPKcSrJTC2T5xqM34bOizyci';
 
 // Global variables
 let selectedRoute = null;
@@ -82,6 +81,7 @@ let selectedRouteElement = null;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('AmeriFed Dispatch System initialized');
     renderRoutes();
     setupEventListeners();
     loadPilotInfo();
@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Render all routes
 function renderRoutes() {
+    console.log('Rendering routes...');
     renderRouteCategory('domesticPax', 'domesticPax');
     renderRouteCategory('domesticCargo', 'domesticCargo');
     renderRouteCategory('internationalPax', 'internationalPax');
@@ -99,6 +100,18 @@ function renderRoutes() {
 function renderRouteCategory(categoryId, containerId) {
     const container = document.getElementById(containerId);
     const categoryRoutes = routes[categoryId];
+    
+    if (!container) {
+        console.error('Container not found:', containerId);
+        return;
+    }
+    
+    if (!categoryRoutes) {
+        console.error('Routes not found for category:', categoryId);
+        return;
+    }
+    
+    console.log(`Rendering ${categoryRoutes.length} routes for ${categoryId}`);
     
     container.innerHTML = categoryRoutes.map(route => `
         <div class="route-card border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all duration-200" 
@@ -131,10 +144,16 @@ function setupEventListeners() {
     });
 
     // Complete route button
-    document.getElementById('completeRoute').addEventListener('click', completeRoute);
+    const completeBtn = document.getElementById('completeRoute');
+    if (completeBtn) {
+        completeBtn.addEventListener('click', completeRoute);
+    }
     
     // Cancel route button
-    document.getElementById('cancelRoute').addEventListener('click', cancelRoute);
+    const cancelBtn = document.getElementById('cancelRoute');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', cancelRoute);
+    }
 }
 
 // Select a route
@@ -163,6 +182,8 @@ function showSelectedRoute() {
     
     const display = document.getElementById('selectedRouteDisplay');
     const info = document.getElementById('selectedRouteInfo');
+    
+    if (!display || !info) return;
     
     info.innerHTML = `
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -201,15 +222,14 @@ async function completeRoute() {
     }
     
     const pilotName = document.getElementById('pilotName').value.trim();
-    const  = document.getElementById('').value.trim();
     
-    if (!pilotName || !) {
-        showStatus('Please enter pilot name and ID', 'error');
+    if (!pilotName) {
+        showStatus('Please enter pilot name', 'error');
         return;
     }
     
     try {
-        await sendDiscordMessage('completed', pilotName, );
+        await sendDiscordMessage('completed', pilotName);
         showStatus('Route completed successfully!', 'success');
         
         // Update route status
@@ -238,15 +258,14 @@ async function cancelRoute() {
     }
     
     const pilotName = document.getElementById('pilotName').value.trim();
-    const  = document.getElementById('').value.trim();
     
-    if (!pilotName || !) {
-        showStatus('Please enter pilot name and ID', 'error');
+    if (!pilotName) {
+        showStatus('Please enter pilot name', 'error');
         return;
     }
     
     try {
-        await sendDiscordMessage('cancelled', pilotName, );
+        await sendDiscordMessage('cancelled', pilotName);
         showStatus('Route cancelled successfully!', 'success');
         
         // Update route status
@@ -268,7 +287,7 @@ async function cancelRoute() {
 }
 
 // Send Discord message
-async function sendDiscordMessage(action, pilotName, ) {
+async function sendDiscordMessage(action, pilotName) {
     const timestamp = new Date().toLocaleString();
     const route = selectedRoute;
     
@@ -277,11 +296,11 @@ async function sendDiscordMessage(action, pilotName, ) {
     if (action === 'completed') {
         color = 0x10B981; // Green
         title = '✅ Route Completed';
-        description = `${pilotName} (ID: ${}) has successfully completed route ${route.id}`;
+        description = `${pilotName} has successfully completed route ${route.id}`;
     } else if (action === 'cancelled') {
         color = 0xEF4444; // Red
         title = '❌ Route Cancelled';
-        description = `${pilotName} (ID: ${}) has cancelled route ${route.id}`;
+        description = `${pilotName} has cancelled route ${route.id}`;
     }
     
     const embed = {
@@ -351,13 +370,9 @@ function loadPilotInfo() {
     const savedName = localStorage.getItem('amerifed_pilot_name');
     
     if (savedName) document.getElementById('pilotName').value = savedName;
-    if (savedId) document.getElementById('').value = savedId;
     
     // Save pilot info when changed
     document.getElementById('pilotName').addEventListener('input', function() {
         localStorage.setItem('amerifed_pilot_name', this.value);
-    });
-    
-    document.getElementById('').addEventListener('input', function() {
     });
 }
