@@ -18,6 +18,7 @@
     <button onclick="testWebhook()">Test Webhook</button>
     <button onclick="testCompletedRoute()">Test Completed Route</button>
     <button onclick="testCancelledRoute()">Test Cancelled Route</button>
+    <button onclick="testPickedRoute()">Test Picked Up Route</button>
     
     <div id="result"></div>
 
@@ -90,6 +91,47 @@
         }
 
         async function testCancelledRoute() {
+        async function testPickedRoute() {
+            const embed = {
+                title: "🛫 Route Picked Up",
+                description: "Test Pilot (ID: TEST123) has picked up route 1112",
+                color: 0x3B82F6,
+                fields: [
+                    {
+                        name: "Route Details",
+                        value: "**ID:** 1112\n**Origin:** KLAX\n**Destination:** KJFK\n**Duration:** 5:30",
+                        inline: true
+                    },
+                    {
+                        name: "Flight Info",
+                        value: "**Type:** Domestic Passenger\n**Airline:** American Airlines\n**Time:** " + new Date().toLocaleString(),
+                        inline: true
+                    }
+                ],
+                timestamp: new Date().toISOString()
+            };
+            
+            const payload = {
+                embeds: [embed],
+                username: "AmeriFed Dispatch BOT"
+            };
+            
+            try {
+                const response = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    document.getElementById("result").innerHTML = "<p class=\"success\">✅ Picked up route test successful!</p>";
+                } else {
+                    document.getElementById("result").innerHTML = "<p class=\"error\">❌ Picked up route test failed: " + response.status + "</p>";
+                }
+            } catch (error) {
+                document.getElementById("result").innerHTML = "<p class=\"error\">❌ Error: " + error.message + "</p>";
+            }
+        }
             const embed = {
                 title: '❌ Route Cancelled',
                 description: 'Test Pilot (ID: TEST123) has cancelled route 1112',
