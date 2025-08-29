@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Discord Webhook</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Test Discord Webhook</h1>
+    <p>This page tests the Discord webhook integration for the AmeriFed Dispatch System.</p>
+    
+    <button onclick="testWebhook()">Test Webhook</button>
+    <button onclick="testCompletedRoute()">Test Completed Route</button>
+    <button onclick="testCancelledRoute()">Test Cancelled Route</button>
+    
+    <div id="result"></div>
+
+    <script>
+        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1410824671301206108/1tjGN1ZCnsczKz_-CA7t7RwfPT74Dn4idYsVH2nl6m37CPKcSrJTC2T5xqM34bOizyci';
+
+        async function testWebhook() {
+            const payload = {
+                content: '🧪 Test message from AmeriFed Dispatch System',
+                username: 'AmeriFed Dispatch BOT'
+            };
+            
+            try {
+                const response = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = '<p class="success">✅ Webhook test successful!</p>';
+                } else {
+                    document.getElementById('result').innerHTML = '<p class="error">❌ Webhook test failed: ' + response.status + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function testCompletedRoute() {
+            const embed = {
+                title: '✅ Route Completed',
+                description: 'Test Pilot (ID: TEST123) has successfully completed route 1112',
+                color: 0x10B981,
+                fields: [
+                    {
+                        name: 'Route Details',
+                        value: '**ID:** 1112\n**Origin:** KLAX\n**Destination:** KJFK\n**Duration:** 5:30',
+                        inline: true
+                    },
+                    {
+                        name: 'Flight Info',
+                        value: '**Type:** Domestic Passenger\n**Airline:** American Airlines\n**Time:** ' + new Date().toLocaleString(),
+                        inline: true
+                    }
+                ],
+                timestamp: new Date().toISOString()
+            };
+            
+            const payload = {
+                embeds: [embed],
+                username: 'AmeriFed Dispatch BOT'
+            };
+            
+            try {
+                const response = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = '<p class="success">✅ Completed route test successful!</p>';
+                } else {
+                    document.getElementById('result').innerHTML = '<p class="error">❌ Completed route test failed: ' + response.status + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function testCancelledRoute() {
+            const embed = {
+                title: '❌ Route Cancelled',
+                description: 'Test Pilot (ID: TEST123) has cancelled route 1112',
+                color: 0xEF4444,
+                fields: [
+                    {
+                        name: 'Route Details',
+                        value: '**ID:** 1112\n**Origin:** KLAX\n**Destination:** KJFK\n**Duration:** 5:30',
+                        inline: true
+                    },
+                    {
+                        name: 'Flight Info',
+                        value: '**Type:** Domestic Passenger\n**Airline:** American Airlines\n**Time:** ' + new Date().toLocaleString(),
+                        inline: true
+                    }
+                ],
+                timestamp: new Date().toISOString()
+            };
+            
+            const payload = {
+                embeds: [embed],
+                username: 'AmeriFed Dispatch BOT'
+            };
+            
+            try {
+                const response = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = '<p class="success">✅ Cancelled route test successful!</p>';
+                } else {
+                    document.getElementById('result').innerHTML = '<p class="error">❌ Cancelled route test failed: ' + response.status + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>
