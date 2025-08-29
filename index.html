@@ -4,28 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AmeriFed Dispatch System</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .route-card {
-            transition: all 0.3s ease;
-        }
-        .route-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .selected-route {
-            border-color: #3B82F6;
-            background-color: #EFF6FF;
-        }
-        .completed-route {
-            border-color: #10B981;
-            background-color: #ECFDF5;
-        }
-        .cancelled-route {
-            border-color: #EF4444;
-            background-color: #FEF2F2;
-        }
+        .route-card { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 0.5rem 0; cursor: pointer; transition: all 0.3s; }
+        .route-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .selected-route { border-color: #3B82F6; background-color: #EFF6FF; }
+        .completed-route { border-color: #10B981; background-color: #ECFDF5; }
+        .cancelled-route { border-color: #EF4444; background-color: #FEF2F2; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -45,12 +31,10 @@
                 <i class="fas fa-user-pilot text-blue-600 mr-2"></i>
                 Pilot Information
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilot Name</label>
-                    <input type="text" id="pilotName" placeholder="Enter your name" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Pilot Name</label>
+                <input type="text" id="pilotName" placeholder="Enter your name" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
         </div>
 
@@ -117,8 +101,10 @@
     </div>
 
     <script>
-        // AmeriFed Dispatch System - Embedded JavaScript for Vercel
-
+        // AmeriFed Dispatch System - Production Ready
+        
+        console.log('AmeriFed Dispatch System loading...');
+        
         // Route data
         const routes = {
             domesticPax: [
@@ -199,13 +185,20 @@
         let selectedRouteElement = null;
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing...');
+        function initApp() {
+            console.log('Initializing AmeriFed Dispatch System...');
             renderAllRoutes();
             setupEventListeners();
             loadPilotInfo();
-            console.log('Initialization complete');
-        });
+            console.log('AmeriFed Dispatch System initialized successfully');
+        }
+
+        // Wait for page to load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
 
         // Render all routes
         function renderAllRoutes() {
@@ -214,7 +207,7 @@
             renderCategory('domesticCargo', 'domesticCargo');
             renderCategory('internationalPax', 'internationalPax');
             renderCategory('internationalCargo', 'internationalCargo');
-            console.log('Routes rendered');
+            console.log('Routes rendered successfully');
         }
 
         // Render a category
@@ -234,8 +227,7 @@
             let html = '';
             categoryRoutes.forEach(route => {
                 html += `
-                    <div class="route-card border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all duration-200" 
-                         data-route-id="${route.id}" data-category="${categoryId}">
+                    <div class="route-card" data-route-id="${route.id}" data-category="${categoryId}">
                         <div class="flex justify-between items-center">
                             <div>
                                 <h3 class="font-semibold text-gray-800">Route ${route.id}</h3>
