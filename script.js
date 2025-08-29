@@ -1,4 +1,4 @@
-// AmeriFed Dispatch System - Production Ready
+// AmeriFed Dispatch System - Simplified Production Version
 
 // Route data
 const routes = {
@@ -79,59 +79,42 @@ const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/141082467130120610
 let selectedRoute = null;
 let selectedRouteElement = null;
 
-// Initialize the application
-function initApp() {
-    try {
-        console.log('AmeriFed Dispatch System initializing...');
-        renderRoutes();
-        setupEventListeners();
-        loadPilotInfo();
-        console.log('AmeriFed Dispatch System initialized successfully');
-    } catch (error) {
-        console.error('Error initializing app:', error);
-    }
-}
-
-// Wait for DOM to be ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-} else {
-    initApp();
-}
+// Initialize when page loads
+window.onload = function() {
+    console.log('Page loaded, initializing...');
+    renderAllRoutes();
+    setupEventListeners();
+    loadPilotInfo();
+    console.log('Initialization complete');
+};
 
 // Render all routes
-function renderRoutes() {
-    try {
-        console.log('Rendering routes...');
-        renderRouteCategory('domesticPax', 'domesticPax');
-        renderRouteCategory('domesticCargo', 'domesticCargo');
-        renderRouteCategory('internationalPax', 'internationalPax');
-        renderRouteCategory('internationalCargo', 'internationalCargo');
-        console.log('Routes rendered successfully');
-    } catch (error) {
-        console.error('Error rendering routes:', error);
-    }
+function renderAllRoutes() {
+    console.log('Rendering routes...');
+    renderCategory('domesticPax', 'domesticPax');
+    renderCategory('domesticCargo', 'domesticCargo');
+    renderCategory('internationalPax', 'internationalPax');
+    renderCategory('internationalCargo', 'internationalCargo');
+    console.log('Routes rendered');
 }
 
-// Render a specific route category
-function renderRouteCategory(categoryId, containerId) {
-    try {
-        const container = document.getElementById(containerId);
-        const categoryRoutes = routes[categoryId];
-        
-        if (!container) {
-            console.error('Container not found:', containerId);
-            return;
-        }
-        
-        if (!categoryRoutes) {
-            console.error('Routes not found for category:', categoryId);
-            return;
-        }
-        
-        console.log(`Rendering ${categoryRoutes.length} routes for ${categoryId}`);
-        
-        const routeHTML = categoryRoutes.map(route => `
+// Render a category
+function renderCategory(categoryId, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error('Container not found:', containerId);
+        return;
+    }
+    
+    const categoryRoutes = routes[categoryId];
+    if (!categoryRoutes) {
+        console.error('Routes not found for:', categoryId);
+        return;
+    }
+    
+    let html = '';
+    categoryRoutes.forEach(route => {
+        html += `
             <div class="route-card border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all duration-200" 
                  data-route-id="${route.id}" data-category="${categoryId}">
                 <div class="flex justify-between items-center">
@@ -146,148 +129,116 @@ function renderRouteCategory(categoryId, containerId) {
                     </div>
                 </div>
             </div>
-        `).join('');
-        
-        container.innerHTML = routeHTML;
-        console.log(`Successfully rendered ${categoryId}`);
-    } catch (error) {
-        console.error(`Error rendering ${categoryId}:`, error);
-    }
+        `;
+    });
+    
+    container.innerHTML = html;
+    console.log(`Rendered ${categoryRoutes.length} routes for ${categoryId}`);
 }
 
 // Setup event listeners
 function setupEventListeners() {
-    try {
-        // Route selection
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.route-card')) {
-                const routeCard = e.target.closest('.route-card');
-                const routeId = routeCard.dataset.routeId;
-                const category = routeCard.dataset.category;
-                selectRoute(routeId, category, routeCard);
-            }
-        });
+    // Route selection
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.route-card')) {
+            const routeCard = e.target.closest('.route-card');
+            const routeId = routeCard.dataset.routeId;
+            const category = routeCard.dataset.category;
+            selectRoute(routeId, category, routeCard);
+        }
+    });
 
-        // Complete route button
-        const completeBtn = document.getElementById('completeRoute');
-        if (completeBtn) {
-            completeBtn.addEventListener('click', completeRoute);
-        }
-        
-        // Cancel route button
-        const cancelBtn = document.getElementById('cancelRoute');
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', cancelRoute);
-        }
-        
-        console.log('Event listeners setup complete');
-    } catch (error) {
-        console.error('Error setting up event listeners:', error);
+    // Complete route button
+    const completeBtn = document.getElementById('completeRoute');
+    if (completeBtn) {
+        completeBtn.addEventListener('click', completeRoute);
+    }
+    
+    // Cancel route button
+    const cancelBtn = document.getElementById('cancelRoute');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', cancelRoute);
     }
 }
 
 // Select a route
 function selectRoute(routeId, category, routeElement) {
-    try {
-        // Clear previous selection
-        if (selectedRouteElement) {
-            selectedRouteElement.classList.remove("selected-route");
-        }
-        
-        // Find the route data
-        const route = routes[category].find(r => r.id === routeId);
-        if (!route) return;
-        
-        // Update selection
-        selectedRoute = route;
-        selectedRouteElement = routeElement;
-        routeElement.classList.add("selected-route");
-        
-        // Show selected route display
-        showSelectedRoute();
-        
-        // Send pickup notification
-        const pilotName = document.getElementById("pilotName").value.trim();
-        if (pilotName) {
-            sendDiscordMessage("picked", pilotName);
-        }
-    } catch (error) {
-        console.error("Error selecting route:", error);
+    // Clear previous selection
+    if (selectedRouteElement) {
+        selectedRouteElement.classList.remove('selected-route');
     }
-}        
-        // Find the route data
-        const route = routes[category].find(r => r.id === routeId);
-        if (!route) return;
-        
-        // Update selection
-        selectedRoute = route;
-        selectedRouteElement = routeElement;
-        routeElement.classList.add('selected-route');
-        
-        // Show selected route display
-        showSelectedRoute();
-    } catch (error) {
-        console.error('Error selecting route:', error);
+    
+    // Find the route data
+    const route = routes[category].find(r => r.id === routeId);
+    if (!route) return;
+    
+    // Update selection
+    selectedRoute = route;
+    selectedRouteElement = routeElement;
+    routeElement.classList.add('selected-route');
+    
+    // Show selected route display
+    showSelectedRoute();
+    
+    // Send pickup notification
+    const pilotName = document.getElementById('pilotName').value.trim();
+    if (pilotName) {
+        sendDiscordMessage('picked', pilotName);
     }
 }
 
 // Show selected route information
 function showSelectedRoute() {
-    try {
-        if (!selectedRoute) return;
-        
-        const display = document.getElementById('selectedRouteDisplay');
-        const info = document.getElementById('selectedRouteInfo');
-        
-        if (!display || !info) return;
-        
-        info.innerHTML = `
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Route ID</p>
-                    <p class="text-lg font-semibold text-gray-800">${selectedRoute.id}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Origin</p>
-                    <p class="text-lg font-semibold text-gray-800">${selectedRoute.origin}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Destination</p>
-                    <p class="text-lg font-semibold text-gray-800">${selectedRoute.destination}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Duration</p>
-                    <p class="text-lg font-semibold text-gray-800">${selectedRoute.duration}</p>
-                </div>
+    if (!selectedRoute) return;
+    
+    const display = document.getElementById('selectedRouteDisplay');
+    const info = document.getElementById('selectedRouteInfo');
+    
+    if (!display || !info) return;
+    
+    info.innerHTML = `
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Route ID</p>
+                <p class="text-lg font-semibold text-gray-800">${selectedRoute.id}</p>
             </div>
-            <div class="mt-4 pt-4 border-t border-gray-200">
-                <p class="text-sm font-medium text-gray-500">Airline</p>
-                <p class="text-lg font-semibold text-gray-800">${selectedRoute.airline}</p>
-                <p class="text-sm text-gray-500">${selectedRoute.type}</p>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Origin</p>
+                <p class="text-lg font-semibold text-gray-800">${selectedRoute.origin}</p>
             </div>
-        `;
-        
-        display.classList.remove('hidden');
-    } catch (error) {
-        console.error('Error showing selected route:', error);
-    }
+            <div>
+                <p class="text-sm font-medium text-gray-500">Destination</p>
+                <p class="text-lg font-semibold text-gray-800">${selectedRoute.destination}</p>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Duration</p>
+                <p class="text-lg font-semibold text-gray-800">${selectedRoute.duration}</p>
+            </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <p class="text-sm font-medium text-gray-500">Airline</p>
+            <p class="text-lg font-semibold text-gray-800">${selectedRoute.airline}</p>
+            <p class="text-sm text-gray-500">${selectedRoute.type}</p>
+        </div>
+    `;
+    
+    display.classList.remove('hidden');
 }
 
 // Complete a route
 async function completeRoute() {
+    if (!selectedRoute) {
+        showStatus('Please select a route first', 'error');
+        return;
+    }
+    
+    const pilotName = document.getElementById('pilotName').value.trim();
+    if (!pilotName) {
+        showStatus('Please enter pilot name', 'error');
+        return;
+    }
+    
     try {
-        if (!selectedRoute) {
-            showStatus('Please select a route first', 'error');
-            return;
-        }
-        
-        const pilotName = document.getElementById('pilotName').value.trim();
-        
-        if (!pilotName) {
-            showStatus('Please enter pilot name', 'error');
-            return;
-        }
-        
         await sendDiscordMessage('completed', pilotName);
         showStatus('Route completed successfully!', 'success');
         
@@ -311,19 +262,18 @@ async function completeRoute() {
 
 // Cancel a route
 async function cancelRoute() {
+    if (!selectedRoute) {
+        showStatus('Please select a route first', 'error');
+        return;
+    }
+    
+    const pilotName = document.getElementById('pilotName').value.trim();
+    if (!pilotName) {
+        showStatus('Please enter pilot name', 'error');
+        return;
+    }
+    
     try {
-        if (!selectedRoute) {
-            showStatus('Please select a route first', 'error');
-            return;
-        }
-        
-        const pilotName = document.getElementById('pilotName').value.trim();
-        
-        if (!pilotName) {
-            showStatus('Please enter pilot name', 'error');
-            return;
-        }
-        
         await sendDiscordMessage('cancelled', pilotName);
         showStatus('Route cancelled successfully!', 'success');
         
@@ -347,46 +297,50 @@ async function cancelRoute() {
 
 // Send Discord message
 async function sendDiscordMessage(action, pilotName) {
+    const timestamp = new Date().toLocaleString();
+    const route = selectedRoute;
+    
+    let color, title, description;
+    
+    if (action === 'completed') {
+        color = 0x10B981;
+        title = '✅ Route Completed';
+        description = `${pilotName} has successfully completed route ${route.id}`;
+    } else if (action === 'cancelled') {
+        color = 0xEF4444;
+        title = '❌ Route Cancelled';
+        description = `${pilotName} has cancelled route ${route.id}`;
+    } else if (action === 'picked') {
+        color = 0x3B82F6;
+        title = '🛫 Route Picked Up';
+        description = `${pilotName} has picked up route ${route.id}`;
+    }
+    
+    const embed = {
+        title: title,
+        description: description,
+        color: color,
+        fields: [
+            {
+                name: 'Route Details',
+                value: `**ID:** ${route.id}\n**Origin:** ${route.origin}\n**Destination:** ${route.destination}\n**Duration:** ${route.duration}`,
+                inline: true
+            },
+            {
+                name: 'Flight Info',
+                value: `**Type:** ${route.type}\n**Airline:** ${route.airline}\n**Time:** ${timestamp}`,
+                inline: true
+            }
+        ],
+        timestamp: new Date().toISOString()
+    };
+    
+    const payload = {
+        embeds: [embed],
+        username: 'AmeriFed Dispatch BOT'
+    };
+    
     try {
-        const timestamp = new Date().toLocaleString();
-        const route = selectedRoute;
-        
-        let color, title, description;
-        
-        if (action === 'completed') {
-            color = 0x10B981; // Green
-            title = '✅ Route Completed';
-            description = `${pilotName} has successfully completed route ${route.id}`;
-        } else if (action === 'cancelled') {
-            color = 0xEF4444; // Red
-            title = '❌ Route Cancelled';
-            description = `${pilotName} has cancelled route ${route.id}`;
-        }
-        
-        const embed = {
-            title: title,
-            description: description,
-            color: color,
-            fields: [
-                {
-                    name: 'Route Details',
-                    value: `**ID:** ${route.id}\n**Origin:** ${route.origin}\n**Destination:** ${route.destination}\n**Duration:** ${route.duration}`,
-                    inline: true
-                },
-                {
-                    name: 'Flight Info',
-                    value: `**Type:** ${route.type}\n**Airline:** ${route.airline}\n**Time:** ${timestamp}`,
-                    inline: true
-                }
-            ],
-            timestamp: new Date().toISOString()
-        };
-        
-        const payload = {
-            embeds: [embed],
-            username: 'AmeriFed Dispatch BOT'
-        };
-        
         const response = await fetch(DISCORD_WEBHOOK_URL, {
             method: 'POST',
             headers: {
@@ -408,38 +362,30 @@ async function sendDiscordMessage(action, pilotName) {
 
 // Show status message
 function showStatus(message, type) {
-    try {
-        const statusDiv = document.getElementById('statusMessage');
-        const colors = {
-            success: 'bg-green-500',
-            error: 'bg-red-500',
-            info: 'bg-blue-500'
-        };
-        
-        statusDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg ${colors[type]} text-white z-50`;
-        statusDiv.textContent = message;
-        statusDiv.classList.remove('hidden');
-        
-        setTimeout(() => {
-            statusDiv.classList.add('hidden');
-        }, 5000);
-    } catch (error) {
-        console.error('Error showing status:', error);
-    }
+    const statusDiv = document.getElementById('statusMessage');
+    const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        info: 'bg-blue-500'
+    };
+    
+    statusDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg ${colors[type]} text-white z-50`;
+    statusDiv.textContent = message;
+    statusDiv.classList.remove('hidden');
+    
+    setTimeout(() => {
+        statusDiv.classList.add('hidden');
+    }, 5000);
 }
 
 // Load pilot information from localStorage
 function loadPilotInfo() {
-    try {
-        const savedName = localStorage.getItem('amerifed_pilot_name');
-        
-        if (savedName) document.getElementById('pilotName').value = savedName;
-        
-        // Save pilot info when changed
-        document.getElementById('pilotName').addEventListener('input', function() {
-            localStorage.setItem('amerifed_pilot_name', this.value);
-        });
-    } catch (error) {
-        console.error('Error loading pilot info:', error);
+    const savedName = localStorage.getItem('amerifed_pilot_name');
+    if (savedName) {
+        document.getElementById('pilotName').value = savedName;
     }
+    
+    document.getElementById('pilotName').addEventListener('input', function() {
+        localStorage.setItem('amerifed_pilot_name', this.value);
+    });
 }

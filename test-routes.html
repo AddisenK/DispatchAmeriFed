@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Routes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .route-card { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 0.5rem 0; cursor: pointer; }
+        .route-card:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <h1 class="text-3xl font-bold mb-6">Route Test</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Domestic Passenger</h2>
+            <div id="domesticPax"></div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Domestic Cargo</h2>
+            <div id="domesticCargo"></div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">International Passenger</h2>
+            <div id="internationalPax"></div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">International Cargo</h2>
+            <div id="internationalCargo"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple route data
+        const routes = {
+            domesticPax: [
+                { id: '1112', origin: 'KLAX', destination: 'KJFK', duration: '5:30', type: 'Domestic Passenger', airline: 'American Airlines' },
+                { id: '1341', origin: 'KLAS', destination: 'KABQ', duration: '1:10', type: 'Domestic Passenger', airline: 'American Airlines' },
+                { id: '1213', origin: 'KJFK', destination: 'KMIA', duration: '2:30', type: 'Domestic Passenger', airline: 'American Airlines' }
+            ],
+            domesticCargo: [
+                { id: '178', origin: 'KONT', destination: 'KEWR', duration: '5:30', type: 'Domestic Cargo', airline: 'FedEx' },
+                { id: '1574', origin: 'KONT', destination: 'KGSO', duration: '5:00', type: 'Domestic Cargo', airline: 'FedEx' },
+                { id: '2039', origin: 'KOAK', destination: 'KMEM', duration: '4:00', type: 'Domestic Cargo', airline: 'FedEx' }
+            ],
+            internationalPax: [
+                { id: '7012', origin: 'LGAV', destination: 'KJFK', duration: '10:00', type: 'International Passenger', airline: 'American Airlines' },
+                { id: '1195', origin: 'KMIA', destination: 'SBGR', duration: '8:15', type: 'International Passenger', airline: 'American Airlines' },
+                { id: '125', origin: 'PHNL', destination: 'KIAH', duration: '8:00', type: 'International Passenger', airline: 'American Airlines' }
+            ],
+            internationalCargo: [
+                { id: '7302', origin: 'SPJC', destination: 'KMEM', duration: '7:00', type: 'International Cargo', airline: 'FedEx' },
+                { id: '84', origin: 'KMEM', destination: 'MMMX', duration: '3:10', type: 'International Cargo', airline: 'FedEx' },
+                { id: '5950', origin: 'EDDK', destination: 'LEMD', duration: '2:15', type: 'International Cargo', airline: 'FedEx' }
+            ]
+        };
+
+        // Render routes
+        function renderRoutes() {
+            Object.keys(routes).forEach(category => {
+                const container = document.getElementById(category);
+                if (container) {
+                    const routeHTML = routes[category].map(route => `
+                        <div class="route-card">
+                            <h3 class="font-semibold">Route ${route.id}</h3>
+                            <p class="text-gray-600">${route.origin} → ${route.destination}</p>
+                            <p class="text-sm text-gray-500">Duration: ${route.duration}</p>
+                            <p class="text-sm font-medium">${route.airline}</p>
+                        </div>
+                    `).join('');
+                    container.innerHTML = routeHTML;
+                }
+            });
+        }
+
+        // Initialize
+        window.onload = function() {
+            console.log('Test page loaded');
+            renderRoutes();
+            console.log('Routes rendered');
+        };
+    </script>
+</body>
+</html>
